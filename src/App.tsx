@@ -1,10 +1,11 @@
+import AppBar from "./components/AppBar";
 import Ex01 from "./components/Ex01";
 
 export default function App() {
     return (
         <div className="h-screen flex flex-col">
-            <div className="bg-blue-600 dark:bg-slate-800 h-16 flex-none"></div>
-            <div className="bg-yellow-200 dark:bg-slate-600 flex-grow">
+            <AppBar />
+            <div className="flex-1 bg-zinc-50 dark:bg-slate-600">
                 <Ex01 />
             </div>
         </div>
