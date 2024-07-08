@@ -20,7 +20,7 @@ export default function AppBar() {
     }, [isDark]);
 
     return (
-        <nav className="relative flex gap-4 flex-wrap items-center px-4 py-2 lg:py-4 shadow-md bg-zinc-50 dark:bg-neutral-700 dark:text-white">
+        <nav className="relative flex gap-4 flex-wrap items-center px-4 py-2 lg:py-4 shadow-md bg-sky-200 dark:bg-slate-700 dark:text-gray-300">
             <div className="flex-0">
                 <div className="flex items-center">
                     <img
