@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Status } from "./Letter";
+import { Status } from "../const";
 import Word from "./Word";
 
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
 export default function Words ({ words, onChange }: IProps) {
     const handleChange = useCallback(
         (wordIndex: number) => (letterIndex: number) => onChange(wordIndex, letterIndex),
-        []
+        [onChange]
     );
 
     return (

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
-
-export enum Status { NotFound, OffSpot, InSpot };
+import { Status } from "../const";
 
 interface IProps {
     char: string;
@@ -17,7 +16,7 @@ export default function Letter ({ char, status, onChange }: IProps) {
         [status]
     );
 
-    const handleClick = useCallback(() => onChange(), []);
+    const handleClick = useCallback(() => onChange(), [onChange]);
 
     return (
         <div onClick={handleClick} className={`w-12 h-12 grid place-items-center cursor-pointer font-semibold text-4xl text-zinc-50 ${statusClass}`}>

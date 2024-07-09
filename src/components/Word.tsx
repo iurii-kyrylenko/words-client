@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import Letter, { Status } from "./Letter";
+import { Status } from "../const";
+import Letter from "./Letter";
 
 interface IProps {
     word: { char: string; status: Status; }[];
@@ -7,7 +8,10 @@ interface IProps {
 }
 
 export default function Word ({ word, onChange }: IProps) {
-    const handleChange = useCallback((letterIndex: number) => () => onChange(letterIndex), []);
+    const handleChange = useCallback(
+        (letterIndex: number) => () => onChange(letterIndex),
+        [onChange]
+    );
 
     return (
         <div className="flex gap-2 select-none">

@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { Status } from "./Letter";
+import { Status } from "../const";
 import Actions from "./Actions";
 import Results from "./Results";
 import Words from "./Words";
+import { search } from "../service/search";
+
+interface IResults {
+    remains: string[];
+    matches: string[];
+}
 
 const testWords = [
     [
@@ -28,25 +34,9 @@ const testWords = [
     ],
 ];
 
-const testResults = {
-    remains: [
-        "hello","hello","hello","hello","hello","hello","hello","hello",
-        "hello","hello","hello","hello","hello","hello","hello","hello",
-    ],
-    matches: [
-        "world","world","world","world","world","world","world","world",
-        "world","world","world","world","world","world","world","world",
-        "world","world","world","world","world","world","world","world",
-        "world","world","world","world","world","world","world","world",
-        "world","world","world","world","world","world","world","world",
-        "world","world","world","world","world","world","world","world",
-        "world","world","world","world","world","world","world","world",
-    ],
-};
-
 export default function Hurdle () {
     const [words, setWords] = useState(testWords);
-    const [results, setResults] = useState(testResults);
+    const [results, setResults] = useState<IResults>({ remains: ["-----"], matches: ["-----"] });
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
         setWords((oldWords) => {
@@ -57,12 +47,7 @@ export default function Hurdle () {
         });
     };
 
-    const handleSearch = () => {
-        setResults({ remains: ["..."], matches: ["..."] });
-        setTimeout(() => {
-            setResults({ remains: ["hello"], matches: ["world"] });
-        }, 1000);
-    };
+    const handleSearch = () => setResults(search(5, words));
 
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
