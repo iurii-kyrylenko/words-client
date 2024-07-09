@@ -3,7 +3,7 @@ import { Button } from "@headlessui/react";
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 
 
-export default function AppBar() {
+export default function AppBar () {
     const [isDark, setDark] = useState(true);
 
     const changeMode = () => {

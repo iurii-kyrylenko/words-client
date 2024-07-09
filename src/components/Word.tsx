@@ -1,13 +1,19 @@
+import { useCallback } from "react";
 import Letter, { Status } from "./Letter";
 
-export default function() {
+interface IProps {
+    word: { char: string; status: Status; }[];
+    onChange: (letterIndex: number) => void;
+}
+
+export default function Word ({ word, onChange }: IProps) {
+    const handleChange = useCallback((letterIndex: number) => () => onChange(letterIndex), []);
+
     return (
-        <div className="flex gap-2">
-            <Letter char="W" status={Status.InSpot} />
-            <Letter char="O" status={Status.NotFound} />
-            <Letter char="R" status={Status.OffSpot} />
-            <Letter char="L" status={Status.OffSpot} />
-            <Letter char="D" status={Status.NotFound} />
+        <div className="flex gap-2 select-none">
+            {word.map((letter, letterIndex) =>
+                <Letter key={letterIndex} {...letter} onChange={handleChange(letterIndex)} />
+            )}
         </div>
     );
 }

@@ -9,8 +9,15 @@ const wordSizes = [
     { size: 6, name: "Word size: 6" },
 ];
 
-export default function Actions() {
+interface IProps {
+    onSearch: () => void;
+}
+
+export default function Actions ({ onSearch }: IProps) {
     const [wordSize, setWordSize] = useState(wordSizes[1]);
+
+    const handleSearch = () => onSearch();
+
     return (
         <div className="border-0 grid gap-4 grid-cols-2 grid-rows-2 max-[400px]:grid-cols-1">
             <Listbox value={wordSize} onChange={setWordSize}>
@@ -34,7 +41,10 @@ export default function Actions() {
                 </Button>
             </div>
             <div className="relative">
-                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
+                <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleSearch}
+                >
                     <MagnifyingGlassIcon className="absolute top-2.5 left-2.5 size-5" />
                     Search
                 </Button>

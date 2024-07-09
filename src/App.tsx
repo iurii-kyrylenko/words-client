@@ -1,7 +1,7 @@
 import AppBar from "./components/AppBar";
 import Hurdle from "./components/Hurdle";
 
-export default function App() {
+export default function App () {
     return (
         <div className="h-screen flex flex-col">
             <AppBar />
