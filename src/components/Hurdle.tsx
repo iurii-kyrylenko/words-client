@@ -12,31 +12,31 @@ interface IResults {
 
 const testWords = [
     [
-        { char: "E", status: Status.InSpot },
-        { char: "A", status: Status.NotFound },
-        { char: "R", status: Status.OffSpot },
-        { char: "T", status: Status.NotFound },
-        { char: "H", status: Status.NotFound },
+        { char: "e", status: Status.OffSpot },
+        { char: "a", status: Status.NotFound },
+        { char: "r", status: Status.NotFound },
+        { char: "t", status: Status.OffSpot },
+        { char: "h", status: Status.NotFound },
     ],
     [
-        { char: "L", status: Status.NotFound },
-        { char: "I", status: Status.OffSpot },
-        { char: "O", status: Status.NotFound },
-        { char: "N", status: Status.InSpot },
-        { char: "S", status: Status.InSpot },
+        { char: "l", status: Status.NotFound },
+        { char: "i", status: Status.NotFound },
+        { char: "o", status: Status.NotFound },
+        { char: "n", status: Status.OffSpot },
+        { char: "s", status: Status.NotFound },
     ],
     [
-        { char: "D", status: Status.NotFound },
-        { char: "U", status: Status.NotFound },
-        { char: "M", status: Status.NotFound },
-        { char: "P", status: Status.NotFound },
-        { char: "Y", status: Status.NotFound },
+        { char: "d", status: Status.NotFound },
+        { char: "u", status: Status.OffSpot },
+        { char: "m", status: Status.InSpot },
+        { char: "p", status: Status.NotFound },
+        { char: "y", status: Status.NotFound },
     ],
 ];
 
 export default function Hurdle () {
     const [words, setWords] = useState(testWords);
-    const [results, setResults] = useState<IResults>({ remains: ["-----"], matches: ["-----"] });
+    const [results, setResults] = useState<IResults>({ remains: [], matches: [] });
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
         setWords((oldWords) => {

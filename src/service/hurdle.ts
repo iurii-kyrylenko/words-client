@@ -1,11 +1,8 @@
 import { Status } from "../const";
 
-type Letter =
-    "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" |
-    "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" |
-    "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
+type Letter = string;
 type Word = string;
-type LetterInfo = { letter: Letter; status: Status };
+type LetterInfo = { char: Letter; status: Status };
 export type WordInfo = LetterInfo[];
 export interface LetterState {
     detected: Letter | null;
@@ -46,29 +43,29 @@ export default class Hurdle {
     setWordInfo(wordInfo: WordInfo) {
         this.history.push(wordInfo);
 
-        const word = wordInfo.map(({ letter }) => letter).join("");
+        const word = wordInfo.map(({ char }) => char).join("");
         this.wordState.usedWords.add(word);
 
         const found = new Set(
             wordInfo
                 .filter(({ status }) => status !== Status.NotFound)
-                .map(({ letter }) => letter)
+                .map(({ char }) => char)
         );
 
-        wordInfo.forEach(({ status, letter }, index) => {
-            this.wordState.usedLetters.add(letter);
+        wordInfo.forEach(({ status, char }, index) => {
+            this.wordState.usedLetters.add(char);
 
             switch (status) {
                 case Status.InSpot:
-                    this.wordState.letterStates[index].detected = letter;
+                    this.wordState.letterStates[index].detected = char;
                     break;
                 case Status.OffSpot:
-                    this.wordState.letterStates[index].offs.add(letter);
-                    this.wordState.options.add(letter);
+                    this.wordState.letterStates[index].offs.add(char);
+                    this.wordState.options.add(char);
                     break;
                 default: // Status.NotFound:
-                    if (!found.has(letter)) {
-                        this.wordState.disabledLetters.add(letter);
+                    if (!found.has(char)) {
+                        this.wordState.disabledLetters.add(char);
                     }
             }
         });
@@ -93,15 +90,15 @@ export default class Hurdle {
             );
             const offCondition = this.wordState.letterStates.reduce(
                 (acc, { offs }, index) =>
-                    acc &&= offs.size ? !offs.has(w[index] as Letter) : true,
+                    acc &&= offs.size ? !offs.has(w[index]) : true,
                 true
             );
             const disableCondition = [...this.wordState.disabledLetters].reduce(
-                (acc, letter) => acc &&= !w.includes(letter),
+                (acc, char) => acc &&= !w.includes(char),
                 true
             );
             const optionsCondition = [...this.wordState.options].reduce(
-                (acc, letter) => acc &&= w.includes(letter),
+                (acc, char) => acc &&= w.includes(char),
                 true
             );
 
@@ -118,7 +115,7 @@ export default class Hurdle {
             (w) => {
                 const distinctLetters = new Set([...w]).size === this.wordSize;
                 return distinctLetters &&
-                    ![...w].some((letter) => this.wordState.usedLetters.has(<Letter>letter));
+                    ![...w].some((char) => this.wordState.usedLetters.has(char));
             }
         );
     }

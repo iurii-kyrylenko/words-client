@@ -24,6 +24,7 @@ export default function Results ({ remains, matches }: IResultsProps) {
 function Result ({ words }: IResultProps) {
     return (
         <>
+            {!words.length && "-----"}
             {words.map((word, index) => <p key={index}>{word}</p>)}
         </>
     );
