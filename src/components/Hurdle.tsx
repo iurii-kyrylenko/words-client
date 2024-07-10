@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Status } from "../const";
+import { Status, wordSizes } from "../const";
 import Actions from "./Actions";
 import Results from "./Results";
 import Words from "./Words";
@@ -15,31 +15,8 @@ interface IResults {
     matches: string[];
 }
 
-// const testWords = [
-//     [
-//         { char: "e", status: Status.OffSpot },
-//         { char: "a", status: Status.NotFound },
-//         { char: "r", status: Status.NotFound },
-//         { char: "t", status: Status.OffSpot },
-//         { char: "h", status: Status.NotFound },
-//     ],
-//     [
-//         { char: "l", status: Status.NotFound },
-//         { char: "i", status: Status.NotFound },
-//         { char: "o", status: Status.NotFound },
-//         { char: "n", status: Status.OffSpot },
-//         { char: "s", status: Status.NotFound },
-//     ],
-//     [
-//         { char: "d", status: Status.NotFound },
-//         { char: "u", status: Status.OffSpot },
-//         { char: "m", status: Status.InSpot },
-//         { char: "p", status: Status.NotFound },
-//         { char: "y", status: Status.NotFound },
-//     ],
-// ];
-
 export default function Hurdle () {
+    const [wordSize, setWordSize] = useState(wordSizes[1]);
     const [words, setWords] = useState<ICharInfo[][]>([]);
     const [results, setResults] = useState<IResults>({ remains: [], matches: [] });
 
@@ -62,12 +39,18 @@ export default function Hurdle () {
 
     const handleDelete = () => setWords((oldWords) => oldWords.slice(0, -1));
 
-    const handleSearch = () => setResults(search(5, words));
+    const handleSearch = () => setResults(search(wordSize.size, words));
 
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
             <div className="flex flex-col gap-4">
-                <Actions onAdd={handleAdd} onDelete={handleDelete} onSearch={handleSearch} />
+                <Actions
+                    wordSize={wordSize}
+                    onWordSizeChange={setWordSize}
+                    onAdd={handleAdd}
+                    onDelete={handleDelete}
+                    onSearch={handleSearch}
+                />
                 <Words
                     words={words}
                     onChange={handleChange}

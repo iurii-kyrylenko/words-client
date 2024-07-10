@@ -4,14 +4,20 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { ChangeEvent, useState } from 'react';
 import { wordSizes } from '../const';
 
+interface IWordSize {
+    size: number;
+    name: string;
+}
+
 interface IProps {
+    wordSize: IWordSize;
+    onWordSizeChange: (wordSize: IWordSize) => void;
     onAdd: (word: string) => void;
     onDelete: () => void;
     onSearch: () => void;
 }
 
-export default function Actions ({ onAdd, onDelete, onSearch }: IProps) {
-    const [wordSize, setWordSize] = useState(wordSizes[1]);
+export default function Actions ({ wordSize, onWordSizeChange, onAdd, onDelete, onSearch }: IProps) {
     const [word, setWord] = useState("");
 
     const handleSearch = () => onSearch();
@@ -32,7 +38,7 @@ export default function Actions ({ onAdd, onDelete, onSearch }: IProps) {
 
     return (
         <div className="border-0 grid gap-4 grid-cols-2 grid-rows-2 max-[400px]:grid-cols-1">
-            <Listbox value={wordSize} onChange={setWordSize}>
+            <Listbox value={wordSize} onChange={onWordSizeChange}>
                 <ListboxButton className="relative py-2 w-40 border dark:border-0 dark:bg-slate-600 dark:text-zinc-50 rounded-md">
                     {wordSize.name}
                     <ChevronDownIcon className="absolute top-2.5 right-2.5 size-4" />
