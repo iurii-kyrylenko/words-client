@@ -56,7 +56,7 @@ export default function Hurdle () {
                     onChange={handleChange}
                 />
             </div>
-            <Results remains={results.remains} matches={results.matches} />
+            <Results remains={results.remains} matches={results.matches} onSelect={handleAdd} />
         </div>
     );
 }
