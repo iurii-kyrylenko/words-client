@@ -5,37 +5,42 @@ import Results from "./Results";
 import Words from "./Words";
 import { search } from "../service/search";
 
+interface ICharInfo {
+    char: string;
+    status: Status;
+}
+
 interface IResults {
     remains: string[];
     matches: string[];
 }
 
-const testWords = [
-    [
-        { char: "e", status: Status.OffSpot },
-        { char: "a", status: Status.NotFound },
-        { char: "r", status: Status.NotFound },
-        { char: "t", status: Status.OffSpot },
-        { char: "h", status: Status.NotFound },
-    ],
-    [
-        { char: "l", status: Status.NotFound },
-        { char: "i", status: Status.NotFound },
-        { char: "o", status: Status.NotFound },
-        { char: "n", status: Status.OffSpot },
-        { char: "s", status: Status.NotFound },
-    ],
-    [
-        { char: "d", status: Status.NotFound },
-        { char: "u", status: Status.OffSpot },
-        { char: "m", status: Status.InSpot },
-        { char: "p", status: Status.NotFound },
-        { char: "y", status: Status.NotFound },
-    ],
-];
+// const testWords = [
+//     [
+//         { char: "e", status: Status.OffSpot },
+//         { char: "a", status: Status.NotFound },
+//         { char: "r", status: Status.NotFound },
+//         { char: "t", status: Status.OffSpot },
+//         { char: "h", status: Status.NotFound },
+//     ],
+//     [
+//         { char: "l", status: Status.NotFound },
+//         { char: "i", status: Status.NotFound },
+//         { char: "o", status: Status.NotFound },
+//         { char: "n", status: Status.OffSpot },
+//         { char: "s", status: Status.NotFound },
+//     ],
+//     [
+//         { char: "d", status: Status.NotFound },
+//         { char: "u", status: Status.OffSpot },
+//         { char: "m", status: Status.InSpot },
+//         { char: "p", status: Status.NotFound },
+//         { char: "y", status: Status.NotFound },
+//     ],
+// ];
 
 export default function Hurdle () {
-    const [words, setWords] = useState(testWords);
+    const [words, setWords] = useState<ICharInfo[][]>([]);
     const [results, setResults] = useState<IResults>({ remains: [], matches: [] });
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
@@ -47,12 +52,22 @@ export default function Hurdle () {
         });
     };
 
+    const handleAdd = (word: string) => {
+        setWords((oldWords) => {
+            const newWord = [...word].map((char) => ({ char, status: Status.NotFound }));
+            const newWords = [...oldWords, newWord];
+            return newWords;
+        });
+    }
+
+    const handleDelete = () => setWords((oldWords) => oldWords.slice(0, -1));
+
     const handleSearch = () => setResults(search(5, words));
 
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
             <div className="flex flex-col gap-4">
-                <Actions onSearch={handleSearch} />
+                <Actions onAdd={handleAdd} onDelete={handleDelete} onSearch={handleSearch} />
                 <Words
                     words={words}
                     onChange={handleChange}
