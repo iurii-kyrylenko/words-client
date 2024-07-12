@@ -9,3 +9,10 @@ export const wordSizes = [
     { size: 5, name: "Word size: 5" },
     { size: 6, name: "Word size: 6" },
 ];
+
+export const options5 = [
+    "earth",
+    "dings",
+    "flock",
+    "bumpy",
+];

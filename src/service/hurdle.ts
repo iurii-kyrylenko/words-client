@@ -1,4 +1,4 @@
-import { Status } from "../const";
+import { Status, options5 } from "../const";
 
 type Letter = string;
 type Word = string;
@@ -21,6 +21,7 @@ export default class Hurdle {
     private wordSize: number;
     private history: WordInfo[];
     private wordState: WordState;
+    private options: Set<string>;
 
     constructor(words: Word[], length: number) {
         this.words = words.filter((w) => w.length === length);
@@ -38,6 +39,7 @@ export default class Hurdle {
                     offs: new Set(),
                 }))
         };
+        this.options = length === 5 ? new Set(options5) : new Set();
     }
 
     setWordInfo(wordInfo: WordInfo) {
@@ -45,6 +47,7 @@ export default class Hurdle {
 
         const word = wordInfo.map(({ char }) => char).join("");
         this.wordState.usedWords.add(word);
+        this.options.delete(word);
 
         const found = new Set(
             wordInfo
@@ -77,6 +80,10 @@ export default class Hurdle {
 
     getHistory() {
         return this.history;
+    }
+
+    getOptions() {
+        return [...this.options];
     }
 
     search() {

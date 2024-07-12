@@ -39,7 +39,13 @@ export default function Hurdle () {
 
     const handleDelete = () => setWords((oldWords) => oldWords.slice(0, -1));
 
-    const handleSearch = () => setResults(search(wordSize.size, words));
+    const handleSearch = () => {
+        const { remains, matches, option } = search(wordSize.size, words)
+        setResults({ remains, matches });
+        if (option) {
+            handleAdd(option);
+        }
+    }
 
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
