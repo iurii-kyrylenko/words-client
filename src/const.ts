@@ -17,4 +17,4 @@ export const options5 = [
     "bumpy",
 ];
 
-export const displayLimit = 60;
+export const displayLimit = 42;

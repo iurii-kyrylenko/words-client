@@ -13,12 +13,19 @@ interface ICharInfo {
 interface IResults {
     remains: string[];
     matches: string[];
+    remainsSize: number;
+    matchesSize: number;
 }
 
 export default function Hurdle () {
     const [wordSize, setWordSize] = useState(wordSizes[1]);
     const [words, setWords] = useState<ICharInfo[][]>([]);
-    const [results, setResults] = useState<IResults>({ remains: [], matches: [] });
+    const [results, setResults] = useState<IResults>({
+        remains: [],
+        matches: [],
+        remainsSize: 0,
+        matchesSize: 0,
+    });
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
         setWords((oldWords) => {
@@ -44,6 +51,8 @@ export default function Hurdle () {
         setResults({
             remains: remains.slice(0, displayLimit),
             matches: matches.slice(0, displayLimit),
+            remainsSize: remains.length,
+            matchesSize: matches.length,
         });
         if (option) {
             handleAdd(option);
@@ -65,7 +74,13 @@ export default function Hurdle () {
                     onChange={handleChange}
                 />
             </div>
-            <Results remains={results.remains} matches={results.matches} onSelect={handleAdd} />
+            <Results
+                remains={results.remains}
+                matches={results.matches}
+                remainsSize={results.remainsSize}
+                matchesSize={results.matchesSize}
+                onSelect={handleAdd}
+            />
         </div>
     );
 }
