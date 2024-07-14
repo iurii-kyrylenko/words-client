@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Status, wordSizes } from "../const";
+import { Status, displayLimit, wordSizes } from "../const";
 import Actions from "./Actions";
 import Results from "./Results";
 import Words from "./Words";
@@ -41,7 +41,10 @@ export default function Hurdle () {
 
     const handleSearch = () => {
         const { remains, matches, option } = search(wordSize.size, words)
-        setResults({ remains, matches });
+        setResults({
+            remains: remains.slice(0, displayLimit),
+            matches: matches.slice(0, displayLimit),
+        });
         if (option) {
             handleAdd(option);
         }

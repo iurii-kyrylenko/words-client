@@ -16,3 +16,5 @@ export const options5 = [
     "flock",
     "bumpy",
 ];
+
+export const displayLimit = 60;
