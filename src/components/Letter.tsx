@@ -19,7 +19,7 @@ export default function Letter ({ char, status, onChange }: IProps) {
     const handleClick = useCallback(() => onChange(), [onChange]);
 
     return (
-        <div onClick={handleClick} className={`w-12 h-12 grid place-items-center cursor-pointer font-semibold text-4xl text-zinc-50 ${statusClass}`}>
+        <div onClick={handleClick} className={`w-12 h-12 grid place-items-center cursor-pointer font-semibold text-2xl text-zinc-50 ${statusClass}`}>
             {char.toUpperCase()}
         </div>
     );
