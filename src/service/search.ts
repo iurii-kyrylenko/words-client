@@ -1,8 +1,8 @@
-import Hurdle, { WordInfo } from "./hurdle";
-import allWords from "./words.json";
+import Hurdle, { RatedWord, WordInfo } from "./hurdle";
+import allWords from "./words-rated.json";
 
 export const search = (wordSize: number, words: WordInfo[]) => {
-    const hurdle = new Hurdle(allWords, wordSize);
+    const hurdle = new Hurdle(<RatedWord[]>allWords, wordSize);
     words.forEach((word) => hurdle.setWordInfo(word));
     const remains = hurdle.filterOutUsedAndDups();
     const matches = hurdle.search();

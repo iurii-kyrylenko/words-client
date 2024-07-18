@@ -3,6 +3,10 @@ import { Status, options5 } from "../const";
 type Letter = string;
 type Word = string;
 type LetterInfo = { char: Letter; status: Status };
+export interface RatedWord {
+    word: Word;
+    f: number;
+}
 export type WordInfo = LetterInfo[];
 export interface LetterState {
     detected: Letter | null;
@@ -17,14 +21,14 @@ export interface WordState {
 }
 
 export default class Hurdle {
-    private words: Word[];
+    private words: RatedWord[];
     private wordSize: number;
     private history: WordInfo[];
     private wordState: WordState;
     private options: Set<string>;
 
-    constructor(words: Word[], length: number) {
-        this.words = words.filter((w) => w.length === length);
+    constructor(words: RatedWord[], length: number) {
+        this.words = words.filter((rw) => rw.word.length === length);
         this.wordSize = length;
         this.history = [];
         this.wordState = {
@@ -87,25 +91,25 @@ export default class Hurdle {
     }
 
     search() {
-        return this.words.filter((w) => {
-            const usedWordCondition = !this.wordState.usedWords.has(w);
+        return this.words.filter((rw) => {
+            const usedWordCondition = !this.wordState.usedWords.has(rw.word);
 
             const onsCondition = this.wordState.letterStates.reduce(
                 (acc, { detected }, index) =>
-                    acc &&= detected ? w[index] === detected : true,
+                    acc &&= detected ? rw.word[index] === detected : true,
                 true
             );
             const offCondition = this.wordState.letterStates.reduce(
                 (acc, { offs }, index) =>
-                    acc &&= offs.size ? !offs.has(w[index]) : true,
+                    acc &&= offs.size ? !offs.has(rw.word[index]) : true,
                 true
             );
             const disableCondition = [...this.wordState.disabledLetters].reduce(
-                (acc, char) => acc &&= !w.includes(char),
+                (acc, char) => acc &&= !rw.word.includes(char),
                 true
             );
             const optionsCondition = [...this.wordState.options].reduce(
-                (acc, char) => acc &&= w.includes(char),
+                (acc, char) => acc &&= rw.word.includes(char),
                 true
             );
 
@@ -114,16 +118,20 @@ export default class Hurdle {
                 && offCondition
                 && disableCondition
                 && optionsCondition;
-        });
+        })
+            .sort((a, b) => b.f - a.f)
+            .map((rw) => rw.word);
     }
 
     filterOutUsedAndDups() {
         return this.words.filter(
-            (w) => {
-                const distinctLetters = new Set([...w]).size === this.wordSize;
+            (rw) => {
+                const distinctLetters = new Set([...rw.word]).size === this.wordSize;
                 return distinctLetters &&
-                    ![...w].some((char) => this.wordState.usedLetters.has(char));
+                    ![...rw.word].some((char) => this.wordState.usedLetters.has(char));
             }
-        );
+        )
+            .sort((a, b) => b.f - a.f)
+            .map((rw) => rw.word);
     }
 }
