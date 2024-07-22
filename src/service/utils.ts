@@ -1,5 +1,5 @@
 import { Status } from "../const";
-import { WordInfo, WordState }  from "./hurdle";
+import { Word, WordInfo, WordState } from "./hurdle";
 
 // https://en.m.wikipedia.org/wiki/ANSI_escape_code#Colors:
 enum Color {
@@ -39,3 +39,21 @@ export const displayState = (state: WordState) => {
         })),
     });
 };
+
+export const getWordInfo = (target: Word, guess: Word): WordInfo =>
+    [...guess].map((char, index) => {
+        if (char === target[index]) {
+            return { char, status: Status.InSpot };
+        } else if (!target.includes(char)) {
+            return { char, status: Status.NotFound };
+        } else {
+            const targetCount = [...target]
+                .reduce((count, targetChar) => char === targetChar ? count + 1 : count, 0);
+            const guessCount = [...guess.slice(0, index + 1)]
+                .reduce((count, guessChar) => char === guessChar ? count + 1 : count, 0);
+            return {
+                char,
+                status: guessCount > targetCount ? Status.NotFound : Status.OffSpot
+            };
+        }
+    });

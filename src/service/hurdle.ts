@@ -1,8 +1,8 @@
 import { Status, options5 } from "../const";
 
 type Letter = string;
-type Word = string;
 type LetterInfo = { char: Letter; status: Status };
+export type Word = string;
 export interface RatedWord {
     word: Word;
     f: number;
