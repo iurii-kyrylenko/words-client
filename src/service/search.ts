@@ -1,12 +1,26 @@
-import Hurdle, { RatedWord, WordInfo } from "./hurdle";
+import {
+    RatedWord,
+    WordInfo,
+    filterOutUsedAndDups,
+    filterPresetOptions,
+    filterSize,
+    filterWordInfos,
+} from "./wordle";
+import { presets } from "../const";
 import allWords from "./words-rated.json";
 
-export const search = (wordSize: number, words: WordInfo[]) => {
-    const hurdle = new Hurdle(<RatedWord[]>allWords, wordSize);
-    words.forEach((word) => hurdle.setWordInfo(word));
-    const remains = hurdle.filterOutUsedAndDups();
-    const matches = hurdle.search();
-    const option = pickOption(hurdle.getOptions(), matches);
+type Presets = { [size: number]: string[] };
+
+export const search = (wordSize: number, wordInfos: WordInfo[]) => {
+    const presetOptions = (presets as Presets)[wordSize];
+    const ratedWords = filterSize(allWords as RatedWord[], wordSize);
+    const matches = filterWordInfos(ratedWords, wordInfos)
+        .sort((a, b) => b.f - a.f)
+        .map((rw) => rw.word);
+    const remains = filterOutUsedAndDups(ratedWords, wordInfos)
+        .map((rw) => rw.word);
+    const options = filterPresetOptions(presetOptions, wordInfos);
+    const option = pickOption(options, matches);
     return { remains, matches, option };
 };
 
@@ -19,5 +33,4 @@ const rateOption =  (option: string, matches: string[]) =>
 const pickOption = (options: string[], matches: string[]) =>
     options
         .map((option) => ({ option, rate: rateOption(option, matches) }))
-        .sort((a, b) => b.rate - a.rate)
-        [0]?.option;
+        .sort((a, b) => b.rate - a.rate)[0]?.option;

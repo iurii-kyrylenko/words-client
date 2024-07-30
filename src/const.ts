@@ -10,11 +10,19 @@ export const wordSizes = [
     { size: 6, name: "Word size: 6" },
 ];
 
-export const options5 = [
-    "earth",
-    "dings",
-    "flock",
-    "bumpy",
-];
+export const presets = {
+    4: [],
+    5: [
+        "earth",
+        "dings",
+        "flock",
+        "bumpy",
+    ],
+    6: [
+        "earthy",
+        "blinds",
+        "mockup",
+    ],
+};
 
 export const displayLimit = 42;
