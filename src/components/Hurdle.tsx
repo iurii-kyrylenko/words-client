@@ -4,6 +4,7 @@ import Actions from "./Actions";
 import Results from "./Results";
 import Words from "./Words";
 import { search } from "../service/search";
+import { useAnswerStore } from "../service/answerStore";
 
 interface ICharInfo {
     char: string;
@@ -26,6 +27,8 @@ export default function Hurdle () {
         remainsSize: 0,
         matchesSize: 0,
     });
+
+    const { answers, storeAnswer } = useAnswerStore();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
         setWords((oldWords) => {
@@ -59,15 +62,26 @@ export default function Hurdle () {
         }
     }
 
+    const handleStoreAnswer = () => {
+        const lastWordInfo = words.slice(-1).pop();
+        if (lastWordInfo) {
+            const word = lastWordInfo.map(({ char }) => char).join("");
+            storeAnswer(word);
+        }
+    };
+
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
             <div className="flex flex-col gap-4">
                 <Actions
                     wordSize={wordSize}
+                    words={words}
+                    answers={answers}
                     onWordSizeChange={setWordSize}
                     onAdd={handleAdd}
                     onDelete={handleDelete}
                     onSearch={handleSearch}
+                    onStore={handleStoreAnswer}
                 />
                 <Words
                     words={words}
@@ -77,6 +91,7 @@ export default function Hurdle () {
             <Results
                 remains={results.remains}
                 matches={results.matches}
+                answers={answers}
                 remainsSize={results.remainsSize}
                 matchesSize={results.matchesSize}
                 onSelect={handleAdd}

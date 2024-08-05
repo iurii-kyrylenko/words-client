@@ -1,8 +1,8 @@
 import { Button, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { ChangeEvent, useState } from 'react';
-import { wordSizes } from '../const';
+import { MagnifyingGlassIcon, CircleStackIcon } from '@heroicons/react/24/outline';
+import { ChangeEvent, useMemo, useState } from 'react';
+import { Status, wordSizes } from '../const';
 
 interface IWordSize {
     size: number;
@@ -11,13 +11,16 @@ interface IWordSize {
 
 interface IProps {
     wordSize: IWordSize;
+    words: { char: string; status: Status; }[][];
+    answers: Set<string>;
     onWordSizeChange: (wordSize: IWordSize) => void;
     onAdd: (word: string) => void;
     onDelete: () => void;
     onSearch: () => void;
+    onStore: () => void;
 }
 
-export default function Actions ({ wordSize, onWordSizeChange, onAdd, onDelete, onSearch }: IProps) {
+export default function Actions ({ wordSize, words, answers, onWordSizeChange, onAdd, onDelete, onSearch, onStore }: IProps) {
     const [word, setWord] = useState("");
 
     const handleSearch = () => onSearch();
@@ -36,6 +39,13 @@ export default function Actions ({ wordSize, onWordSizeChange, onAdd, onDelete, 
 
     const handleDelete = () => onDelete();
 
+    const handleStoreAnswer = () => onStore();
+
+    const lastWord = useMemo(
+        () => (words.slice(-1).pop() ?? []).map(({ char }) => char).join(""),
+        [words]
+    );
+
     return (
         <div className="border-0 grid gap-4 grid-cols-2 grid-rows-2 max-[400px]:grid-cols-1">
             <Listbox value={wordSize} onChange={onWordSizeChange}>
@@ -53,7 +63,7 @@ export default function Actions ({ wordSize, onWordSizeChange, onAdd, onDelete, 
             </Listbox>
             <Input
                 type="text"
-                className="py-2 w-40 border dark:border-0 rounded-md text-center dark:bg-slate-600 dark:text-zinc-50" placeholder="Add Word ..."
+                className="py-2 w-40 border dark:border-0 rounded-md text-center dark:bg-slate-600 dark:text-zinc-50" placeholder="Add Answer ..."
                 onChange={handleAdd}
                 value={word}
             />
@@ -63,7 +73,7 @@ export default function Actions ({ wordSize, onWordSizeChange, onAdd, onDelete, 
                     onClick={handleDelete}
                 >
                     <XMarkIcon className="absolute top-2.5 left-2.5 size-5" />
-                    Delete Word
+                    <div className="ml-4">Delete Answer</div>
                 </Button>
             </div>
             <div className="relative">
@@ -75,6 +85,16 @@ export default function Actions ({ wordSize, onWordSizeChange, onAdd, onDelete, 
                     Search
                 </Button>
             </div>
+            <div className="relative">
+                {lastWord && <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleStoreAnswer}
+                >
+                    <CircleStackIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Store "{lastWord}"</div>
+                </Button>}
+            </div>
+            <div className="dark:text-zinc-300 content-center">Answers: {answers.size}</div>
         </div>
     );
 }
