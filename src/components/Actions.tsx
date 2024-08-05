@@ -1,6 +1,6 @@
 import { Button, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import { MagnifyingGlassIcon, CircleStackIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, CircleStackIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { Status, wordSizes } from '../const';
 
@@ -94,7 +94,17 @@ export default function Actions ({ wordSize, words, answers, onWordSizeChange, o
                     <div className="ml-4">Store "{lastWord}"</div>
                 </Button>}
             </div>
-            <div className="dark:text-zinc-300 content-center">Answers: {answers.size}</div>
+            <div className="relative">
+                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
+                    <a
+                        href={`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify([...answers], null, 2))}`}
+                        download="answers.json"
+                    >
+                        <ArrowDownTrayIcon className="absolute top-2.5 left-2.5 size-5" />
+                        <div className="ml-4">{answers.size} answers</div>
+                    </a>
+                </Button>
+            </div>
         </div>
     );
 }
