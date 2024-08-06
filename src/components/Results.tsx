@@ -40,7 +40,7 @@ function Result ({ words, answers, size, onSelect }: IResultProps) {
     const handleSelect = (word: string) => () => onSelect(word);
 
     const addBorder = useCallback(
-        (word: string) => answers.has(word) ? " border" : "",
+        (word: string) => answers.has(word) ? " border border-slate-600 dark:border-slate-200" : "",
         [answers]
     );
 

@@ -20,5 +20,10 @@ export const useAnswerStore = () => {
         storeAnswers([...answers]);
     };
 
-    return { answers, storeAnswer };
+    const storeAllAnswers = (answers: string[]) => {
+        setAnswers(new Set([...answers]));
+        storeAnswers([...answers]);
+    };
+
+    return { answers, storeAnswer, storeAllAnswers };
 };

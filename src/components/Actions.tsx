@@ -1,7 +1,7 @@
 import { Button, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import { MagnifyingGlassIcon, CircleStackIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { MagnifyingGlassIcon, CircleStackIcon, ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { ChangeEvent, MouseEvent, useMemo, useState } from 'react';
 import { Status, wordSizes } from '../const';
 
 interface IWordSize {
@@ -18,9 +18,20 @@ interface IProps {
     onDelete: () => void;
     onSearch: () => void;
     onStore: () => void;
+    onStoreAll: (answers: string[]) => void;
 }
 
-export default function Actions ({ wordSize, words, answers, onWordSizeChange, onAdd, onDelete, onSearch, onStore }: IProps) {
+export default function Actions ({
+    wordSize,
+    words,
+    answers,
+    onWordSizeChange,
+    onAdd,
+    onDelete,
+    onSearch,
+    onStore,
+    onStoreAll
+}: IProps) {
     const [word, setWord] = useState("");
 
     const handleSearch = () => onSearch();
@@ -45,6 +56,19 @@ export default function Actions ({ wordSize, words, answers, onWordSizeChange, o
         () => (words.slice(-1).pop() ?? []).map(({ char }) => char).join(""),
         [words]
     );
+
+    const handleUploadStart = (e: MouseEvent<HTMLInputElement>) => {
+        e.currentTarget.value = "";
+    };
+
+    const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+        const blob = (e.target.files ?? [])[0];
+        const reader = new FileReader();
+        reader.readAsText(blob);
+        reader.onload = (e) => {
+            onStoreAll(JSON.parse(e.target?.result as string));
+        };
+    };
 
     return (
         <div className="border-0 grid gap-4 grid-cols-2 grid-rows-2 max-[400px]:grid-cols-1">
@@ -94,6 +118,7 @@ export default function Actions ({ wordSize, words, answers, onWordSizeChange, o
                     <div className="ml-4">Store "{lastWord}"</div>
                 </Button>}
             </div>
+            <div></div>
             <div className="relative">
                 <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
                     <a
@@ -103,6 +128,13 @@ export default function Actions ({ wordSize, words, answers, onWordSizeChange, o
                         <ArrowDownTrayIcon className="absolute top-2.5 left-2.5 size-5" />
                         <div className="ml-4">{answers.size} answers</div>
                     </a>
+                </Button>
+            </div>
+            <div className="relative">
+                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
+                    <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Upload</div>
+                    <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
                 </Button>
             </div>
         </div>

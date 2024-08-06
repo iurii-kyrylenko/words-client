@@ -25,4 +25,4 @@ export const presets = {
     ],
 };
 
-export const displayLimit = 42;
+export const displayLimit = 96;

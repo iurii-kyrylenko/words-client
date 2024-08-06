@@ -28,7 +28,7 @@ export default function Hurdle () {
         matchesSize: 0,
     });
 
-    const { answers, storeAnswer } = useAnswerStore();
+    const { answers, storeAnswer, storeAllAnswers } = useAnswerStore();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
         setWords((oldWords) => {
@@ -70,6 +70,8 @@ export default function Hurdle () {
         }
     };
 
+    const handleStoreAllAnswers = (answers: string[]) => storeAllAnswers(answers);
+
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
             <div className="flex flex-col gap-4">
@@ -82,6 +84,7 @@ export default function Hurdle () {
                     onDelete={handleDelete}
                     onSearch={handleSearch}
                     onStore={handleStoreAnswer}
+                    onStoreAll={handleStoreAllAnswers}
                 />
                 <Words
                     words={words}
