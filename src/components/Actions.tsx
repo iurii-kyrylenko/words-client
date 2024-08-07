@@ -22,7 +22,7 @@ interface IProps {
     onStoreAll: (answers: string[]) => void;
 }
 
-export default function Actions ({
+export default function Actions({
     wordSize,
     words,
     answers,
@@ -55,11 +55,6 @@ export default function Actions ({
     const handleStoreAnswer = () => onStore();
     const handleRemoveAnswer = () => onRemove();
 
-    const lastWord = useMemo(
-        () => (words.slice(-1).pop() ?? []).map(({ char }) => char).join(""),
-        [words]
-    );
-
     const handleUploadStart = (e: MouseEvent<HTMLInputElement>) => {
         e.currentTarget.value = "";
     };
@@ -72,6 +67,11 @@ export default function Actions ({
             onStoreAll(JSON.parse(e.target?.result as string));
         };
     };
+
+    const lastWord = useMemo(
+        () => (words.slice(-1).pop() ?? []).map(({ char }) => char).join(""),
+        [words]
+    );
 
     return (
         <div className="border-0 grid gap-4 grid-cols-2 grid-rows-2 max-[400px]:grid-cols-1">
@@ -112,6 +112,24 @@ export default function Actions ({
                     <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
                 </Button>
             </div>
+            <div className={"relative" + (lastWord ? "" : " invisible")}>
+                <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleStoreAnswer}
+                >
+                    <ArrowDownOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">In "{lastWord}"</div>
+                </Button>
+            </div>
+            <div className={"relative" + (lastWord ? "" : " invisible")}>
+                <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleRemoveAnswer}
+                >
+                    <ArrowUpOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Out "{lastWord}"</div>
+                </Button>
+            </div>
             <div className="relative">
                 <Button
                     className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
@@ -129,24 +147,6 @@ export default function Actions ({
                     <MagnifyingGlassIcon className="absolute top-2.5 left-2.5 size-5" />
                     Search
                 </Button>
-            </div>
-            <div className="relative">
-                {lastWord && <Button
-                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
-                    onClick={handleStoreAnswer}
-                >
-                    <ArrowDownOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">In "{lastWord}"</div>
-                </Button>}
-            </div>
-            <div className="relative">
-                {lastWord && <Button
-                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
-                    onClick={handleRemoveAnswer}
-                >
-                    <ArrowUpOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">Out "{lastWord}"</div>
-                </Button>}
             </div>
         </div>
     );
