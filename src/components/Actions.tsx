@@ -1,6 +1,6 @@
 import { Button, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import { MagnifyingGlassIcon, CircleStackIcon, ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ArrowDownOnSquareStackIcon, ArrowUpOnSquareStackIcon, ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { ChangeEvent, MouseEvent, useMemo, useState } from 'react';
 import { Status, wordSizes } from '../const';
 
@@ -18,6 +18,7 @@ interface IProps {
     onDelete: () => void;
     onSearch: () => void;
     onStore: () => void;
+    onRemove: () => void;
     onStoreAll: (answers: string[]) => void;
 }
 
@@ -30,6 +31,7 @@ export default function Actions ({
     onDelete,
     onSearch,
     onStore,
+    onRemove,
     onStoreAll
 }: IProps) {
     const [word, setWord] = useState("");
@@ -51,6 +53,7 @@ export default function Actions ({
     const handleDelete = () => onDelete();
 
     const handleStoreAnswer = () => onStore();
+    const handleRemoveAnswer = () => onRemove();
 
     const lastWord = useMemo(
         () => (words.slice(-1).pop() ?? []).map(({ char }) => char).join(""),
@@ -92,6 +95,24 @@ export default function Actions ({
                 value={word}
             />
             <div className="relative">
+                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
+                    <a
+                        href={`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify([...answers], null, 2))}`}
+                        download="answers.json"
+                    >
+                        <ArrowDownTrayIcon className="absolute top-2.5 left-2.5 size-5" />
+                        <div className="ml-4">{answers.size} answers</div>
+                    </a>
+                </Button>
+            </div>
+            <div className="relative">
+                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
+                    <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Upload</div>
+                    <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
+                </Button>
+            </div>
+            <div className="relative">
                 <Button
                     className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
                     onClick={handleDelete}
@@ -114,28 +135,18 @@ export default function Actions ({
                     className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
                     onClick={handleStoreAnswer}
                 >
-                    <CircleStackIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">Store "{lastWord}"</div>
+                    <ArrowDownOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">In "{lastWord}"</div>
                 </Button>}
             </div>
-            <div></div>
             <div className="relative">
-                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
-                    <a
-                        href={`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify([...answers], null, 2))}`}
-                        download="answers.json"
-                    >
-                        <ArrowDownTrayIcon className="absolute top-2.5 left-2.5 size-5" />
-                        <div className="ml-4">{answers.size} answers</div>
-                    </a>
-                </Button>
-            </div>
-            <div className="relative">
-                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
-                    <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">Upload</div>
-                    <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
-                </Button>
+                {lastWord && <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleRemoveAnswer}
+                >
+                    <ArrowUpOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Out "{lastWord}"</div>
+                </Button>}
             </div>
         </div>
     );

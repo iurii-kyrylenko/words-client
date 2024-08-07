@@ -28,7 +28,7 @@ export default function Hurdle () {
         matchesSize: 0,
     });
 
-    const { answers, storeAnswer, storeAllAnswers } = useAnswerStore();
+    const { answers, storeAnswer, removeAnswer, storeAllAnswers } = useAnswerStore();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
         setWords((oldWords) => {
@@ -70,6 +70,14 @@ export default function Hurdle () {
         }
     };
 
+    const handleRemoveAnswer = () => {
+        const lastWordInfo = words.slice(-1).pop();
+        if (lastWordInfo) {
+            const word = lastWordInfo.map(({ char }) => char).join("");
+            removeAnswer(word);
+        }
+    };
+
     const handleStoreAllAnswers = (answers: string[]) => storeAllAnswers(answers);
 
     return (
@@ -84,6 +92,7 @@ export default function Hurdle () {
                     onDelete={handleDelete}
                     onSearch={handleSearch}
                     onStore={handleStoreAnswer}
+                    onRemove={handleRemoveAnswer}
                     onStoreAll={handleStoreAllAnswers}
                 />
                 <Words

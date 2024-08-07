@@ -20,10 +20,17 @@ export const useAnswerStore = () => {
         storeAnswers([...answers]);
     };
 
+    const removeAnswer = (answer: string) => {
+        if (answers.delete(answer)) {
+            setAnswers(new Set([...answers]));
+            storeAnswers([...answers]);
+        }
+    };
+
     const storeAllAnswers = (answers: string[]) => {
         setAnswers(new Set([...answers]));
         storeAnswers([...answers]);
     };
 
-    return { answers, storeAnswer, storeAllAnswers };
+    return { answers, storeAnswer, removeAnswer, storeAllAnswers };
 };
