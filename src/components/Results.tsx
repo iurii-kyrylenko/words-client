@@ -39,8 +39,8 @@ interface IResultProps {
 function Result ({ words, answers, size, onSelect }: IResultProps) {
     const handleSelect = (word: string) => () => onSelect(word);
 
-    const addBorder = useCallback(
-        (word: string) => answers.has(word) ? " border border-slate-600 dark:border-slate-200" : "",
+    const underline = useCallback(
+        (word: string) => answers.has(word) ? " underline underline-offset-4" : "",
         [answers]
     );
 
@@ -49,7 +49,7 @@ function Result ({ words, answers, size, onSelect }: IResultProps) {
             {!words.length && "-----"}
             {words.map((word, index) =>
                 <p
-                    className={"text-center m-1 cursor-pointer hover:underline" + addBorder(word)}
+                    className={"my-1 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-700" + underline(word)}
                     key={index}
                     onClick={handleSelect(word)}
                 >
