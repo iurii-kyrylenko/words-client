@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { Status } from "../const";
 import Letter from "./Letter";
+import { ICharInfo } from "../store/app-slice";
 
 interface IProps {
-    word: { char: string; status: Status; }[];
+    word: ICharInfo[];
     onChange: (letterIndex: number) => void;
 }
 

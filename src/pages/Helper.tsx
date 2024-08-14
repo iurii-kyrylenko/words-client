@@ -1,62 +1,43 @@
-import { useState } from "react";
-import { Status, displayLimit, wordSizes } from "../const";
-import Actions from "./Actions";
-import Results from "./Results";
-import Words from "./Words";
+import { Status, displayLimit } from "../const";
+import Actions from "../components/Actions";
+import Results from "../components/Results";
+import Words from "../components/Words";
 import { search } from "../service/search";
-import { useAnswerStore } from "../service/answerStore";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import { removeAnswer, setResults, setWords, storeAnswer } from "../store/app-slice";
 
-interface ICharInfo {
-    char: string;
-    status: Status;
-}
-
-interface IResults {
-    remains: string[];
-    matches: string[];
-    remainsSize: number;
-    matchesSize: number;
-}
-
-export default function Hurdle () {
-    const [wordSize, setWordSize] = useState(wordSizes[1]);
-    const [words, setWords] = useState<ICharInfo[][]>([]);
-    const [results, setResults] = useState<IResults>({
-        remains: [],
-        matches: [],
-        remainsSize: 0,
-        matchesSize: 0,
-    });
-
-    const { answers, storeAnswer, removeAnswer, storeAllAnswers } = useAnswerStore();
+export default function Helper () {
+    const wordSize = useSelector((state: RootState) => state.wordSize);
+    const words = useSelector((state: RootState) => state.words);
+    const results = useSelector((state: RootState) => state.results);
+    const answers = useSelector((state: RootState) => state.answers);
+    const dispatch: AppDispatch = useDispatch();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
-        setWords((oldWords) => {
-            const newWords = [...oldWords];
-            const letter = newWords[wordIndex][letterIndex];
-            letter.status = getNewStatus(letter.status)
-            return newWords;
-        });
+        const newWords = [...words].map((word) => [...word].map(({ char, status }) => ({ char, status })));
+        const letter = newWords[wordIndex][letterIndex];
+        letter.status = getNewStatus(letter.status);
+        dispatch(setWords(newWords));
     };
 
     const handleAdd = (word: string) => {
-        setWords((oldWords) => {
-            const newWord = [...word].map((char) => ({ char, status: Status.NotFound }));
-            const newWords = [...oldWords, newWord];
-            return newWords;
-        });
+        const newWord = [...word].map((char) => ({ char, status: Status.NotFound }));
+        dispatch(setWords([...words, newWord]));
     }
 
-    const handleDelete = () => setWords((oldWords) => oldWords.slice(0, -1));
+    const handleDelete = () => {
+        dispatch(setWords(words.slice(0, -1)));
+    };
 
     const handleSearch = () => {
-        const { remains, matches, option } = search(wordSize.size, words)
-        setResults({
+        const { remains, matches, option } = search(wordSize.size, words);
+        dispatch(setResults({
             remains: remains.slice(0, displayLimit),
             matches: matches.slice(0, displayLimit),
             remainsSize: remains.length,
             matchesSize: matches.length,
-        });
+        }));
         if (option) {
             handleAdd(option);
         }
@@ -66,7 +47,7 @@ export default function Hurdle () {
         const lastWordInfo = words.slice(-1).pop();
         if (lastWordInfo) {
             const word = lastWordInfo.map(({ char }) => char).join("");
-            storeAnswer(word);
+            dispatch(storeAnswer(word));
         }
     };
 
@@ -74,11 +55,9 @@ export default function Hurdle () {
         const lastWordInfo = words.slice(-1).pop();
         if (lastWordInfo) {
             const word = lastWordInfo.map(({ char }) => char).join("");
-            removeAnswer(word);
+            dispatch(removeAnswer(word));
         }
     };
-
-    const handleStoreAllAnswers = (answers: string[]) => storeAllAnswers(answers);
 
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
@@ -87,13 +66,11 @@ export default function Hurdle () {
                     wordSize={wordSize}
                     words={words}
                     answers={answers}
-                    onWordSizeChange={setWordSize}
                     onAdd={handleAdd}
                     onDelete={handleDelete}
                     onSearch={handleSearch}
                     onStore={handleStoreAnswer}
                     onRemove={handleRemoveAnswer}
-                    onStoreAll={handleStoreAllAnswers}
                 />
                 <Words
                     words={words}
@@ -103,7 +80,7 @@ export default function Hurdle () {
             <Results
                 remains={results.remains}
                 matches={results.matches}
-                answers={answers}
+                answers={new Set(answers)}
                 remainsSize={results.remainsSize}
                 matchesSize={results.matchesSize}
                 onSelect={handleAdd}

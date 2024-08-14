@@ -1,38 +1,29 @@
-import { Button, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
-import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import { MagnifyingGlassIcon, ArrowDownOnSquareStackIcon, ArrowUpOnSquareStackIcon, ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
-import { ChangeEvent, MouseEvent, useMemo, useState } from 'react';
-import { Status, wordSizes } from '../const';
-
-interface IWordSize {
-    size: number;
-    name: string;
-}
+import { Button, Input } from '@headlessui/react'
+import { XMarkIcon } from '@heroicons/react/20/solid';
+import { MagnifyingGlassIcon, ArrowDownOnSquareStackIcon, ArrowUpOnSquareStackIcon } from '@heroicons/react/24/outline';
+import { ChangeEvent, useMemo, useState } from 'react';
+import { ICharInfo, IWordSize } from '../store/app-slice';
 
 interface IProps {
     wordSize: IWordSize;
-    words: { char: string; status: Status; }[][];
-    answers: Set<string>;
-    onWordSizeChange: (wordSize: IWordSize) => void;
+    words: ICharInfo[][];
+    answers: string[];
     onAdd: (word: string) => void;
     onDelete: () => void;
     onSearch: () => void;
     onStore: () => void;
     onRemove: () => void;
-    onStoreAll: (answers: string[]) => void;
 }
 
 export default function Actions({
     wordSize,
     words,
     answers,
-    onWordSizeChange,
     onAdd,
     onDelete,
     onSearch,
     onStore,
     onRemove,
-    onStoreAll
 }: IProps) {
     const [word, setWord] = useState("");
 
@@ -55,19 +46,6 @@ export default function Actions({
     const handleStoreAnswer = () => onStore();
     const handleRemoveAnswer = () => onRemove();
 
-    const handleUploadStart = (e: MouseEvent<HTMLInputElement>) => {
-        e.currentTarget.value = "";
-    };
-
-    const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const blob = (e.target.files ?? [])[0];
-        const reader = new FileReader();
-        reader.readAsText(blob);
-        reader.onload = (e) => {
-            onStoreAll(JSON.parse(e.target?.result as string));
-        };
-    };
-
     const lastWord = useMemo(
         () => (words.slice(-1).pop() ?? []).map(({ char }) => char).join(""),
         [words]
@@ -75,43 +53,15 @@ export default function Actions({
 
     return (
         <div className="border-0 grid gap-4 grid-cols-2 grid-rows-2 max-[400px]:grid-cols-1">
-            <Listbox value={wordSize} onChange={onWordSizeChange}>
-                <ListboxButton className="relative py-2 w-40 border dark:border-0 dark:bg-slate-600 dark:text-zinc-50 rounded-md">
-                    {wordSize.name}
-                    <ChevronDownIcon className="absolute top-2.5 right-2.5 size-4" />
-                </ListboxButton>
-                <ListboxOptions anchor="bottom" className="cursor-pointer py-2 w-40 rounded-md bg-sky-200 dark:bg-slate-500 dark:text-zinc-50 text-center">
-                    {wordSizes.map((size) => (
-                        <ListboxOption key={size.size} value={size} className="data-[focus]:bg-sky-400 data-[focus]:dark:bg-slate-800">
-                            {size.name}
-                        </ListboxOption>
-                    ))}
-                </ListboxOptions>
-            </Listbox>
+            <div className="flex justify-center items-center rounded-md border dark:text-zinc-50 dark:border-0 dark:bg-slate-600">
+                <p>Answers: {answers.length}</p>
+            </div>
             <Input
                 type="text"
-                className="py-2 w-40 border dark:border-0 rounded-md text-center dark:bg-slate-600 dark:text-zinc-50" placeholder="Add Answer ..."
+                className="py-2 w-40 border dark:border-0 rounded-md text-center dark:bg-slate-600 dark:text-zinc-50" placeholder="Add guess ..."
                 onChange={handleAdd}
                 value={word}
             />
-            <div className="relative">
-                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
-                    <a
-                        href={`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify([...answers], null, 2))}`}
-                        download="answers.json"
-                    >
-                        <ArrowDownTrayIcon className="absolute top-2.5 left-2.5 size-5" />
-                        <div className="ml-4">{answers.size} answers</div>
-                    </a>
-                </Button>
-            </div>
-            <div className="relative">
-                <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
-                    <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">Upload</div>
-                    <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
-                </Button>
-            </div>
             <div className={"relative" + (lastWord ? "" : " invisible")}>
                 <Button
                     className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
@@ -121,6 +71,15 @@ export default function Actions({
                     <div className="ml-4">In "{lastWord}"</div>
                 </Button>
             </div>
+            <div className="relative">
+                <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleDelete}
+                >
+                    <XMarkIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Remove guess</div>
+                </Button>
+            </div>
             <div className={"relative" + (lastWord ? "" : " invisible")}>
                 <Button
                     className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
@@ -128,15 +87,6 @@ export default function Actions({
                 >
                     <ArrowUpOnSquareStackIcon className="absolute top-2.5 left-2.5 size-5" />
                     <div className="ml-4">Out "{lastWord}"</div>
-                </Button>
-            </div>
-            <div className="relative">
-                <Button
-                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
-                    onClick={handleDelete}
-                >
-                    <XMarkIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">Delete Answer</div>
                 </Button>
             </div>
             <div className="relative">

@@ -1,13 +1,12 @@
-import AppBar from "./components/AppBar";
-import Hurdle from "./components/Hurdle";
+import { Provider } from "react-redux";
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
+import store from "./store";
 
-export default function App () {
-    return (
-        <div className="h-screen flex flex-col">
-            <AppBar />
-            <div className="flex-1 bg-zinc-50 dark:bg-slate-700">
-                <Hurdle />
-            </div>
-        </div>
-    );
-}
+const App = () => (
+    <Provider store={store}>
+        <RouterProvider router={router} />
+    </Provider>
+);
+
+export default App;
