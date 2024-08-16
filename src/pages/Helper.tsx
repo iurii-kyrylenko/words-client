@@ -31,7 +31,7 @@ export default function Helper () {
     };
 
     const handleSearch = () => {
-        const { remains, matches, option } = search(wordSize.size, words);
+        const { remains, matches, option } = search(wordSize.size, words, answers);
         dispatch(setResults({
             remains: remains.slice(0, displayLimit),
             matches: matches.slice(0, displayLimit),
