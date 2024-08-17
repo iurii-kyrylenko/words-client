@@ -82,6 +82,11 @@ export const isWordAllowedAggregate = (word: string, wordStates: WordState[]) =>
 export const filterSize = (words: RatedWord[], wordSize: number) =>
     words.filter((rw) => rw.word.length === wordSize);
 
+export const filterWordInfo = (words: RatedWord[], wordInfo: WordInfo) => {
+    const wordState = getWordState(wordInfo);
+    return words.filter((rw) => isWordAllowed(rw.word, wordState));
+};
+
 export const filterWordInfos = (words: RatedWord[], wordInfos: WordInfo[]) => {
     const wordStates = wordInfos.map(getWordState);
     return words.filter((rw) => isWordAllowedAggregate(rw.word, wordStates));
@@ -105,4 +110,52 @@ export const filterPresetOptions = (presetOptions: string[], wordInfos: WordInfo
         optionSet.delete(word);
     });
     return [...optionSet];
+};
+
+// MinMax
+
+const getWordInfo = (target: string, guess: string) => {
+   const charMap: Options = {};
+   [...target].forEach((char) => charMap[char] = charMap[char] ? charMap[char] + 1 : 1);
+   [...guess].forEach((char, index) => {
+       if (char === target[index] && charMap[char]) {
+           charMap[char]--;
+       }
+   });
+   return [...guess].map((char, index) => {
+       let status: Status;
+       if (char === target[index]) {
+           status = Status.InSpot;
+       } else if (charMap[char]) {
+           status = Status.OffSpot;
+           charMap[char]--;
+       } else {
+           status = Status.NotFound;
+       }
+       return { char, status };
+   });
+};
+
+const getMaxPath = (question: string, answers: string[]): number => {
+    let max = 0;
+    const ratedAnswers = answers.map((word) => ({ word, f: 0 }));
+    answers.forEach((answer) => {
+        const count = filterWordInfo(ratedAnswers, getWordInfo(answer, question)).length;
+        // console.log({ question, answer, info: getWordInfo(answer, question), count });
+        if (count > max) max = count;
+    });
+    return max;
+};
+
+export const getMinMaxQuestions = (questions: string[], answers: string[]) => {
+    let min = Number.POSITIVE_INFINITY;
+    const minmaxQuestions = questions
+        .map((question) => {
+            const max = getMaxPath(question, answers);
+            if (max < min) min = max;
+            return { question, max };
+        })
+        .filter(({ max }) => max === min)
+        .map(({ question }) => question);
+    return { questions: minmaxQuestions, minmax: min };
 };
