@@ -141,7 +141,6 @@ const getMaxPath = (question: string, answers: string[]): number => {
     const ratedAnswers = answers.map((word) => ({ word, f: 0 }));
     answers.forEach((answer) => {
         const count = filterWordInfo(ratedAnswers, getWordInfo(answer, question)).length;
-        // console.log({ question, answer, info: getWordInfo(answer, question), count });
         if (count > max) max = count;
     });
     return max;

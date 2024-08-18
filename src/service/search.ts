@@ -36,7 +36,8 @@ interface PickOptionParams {
 }
 
 const pickOption = ({ presetOptions, wordInfos, matches, answers }: PickOptionParams) => {
-    const threshold = 84;
+    // const threshold = 84;
+    const threshold = 42;
     const answersSet = new Set(answers);
     const matchedAnswers = matches.filter((w) => answersSet.has(w));
     const matchedAnswersLength = matchedAnswers.length;
