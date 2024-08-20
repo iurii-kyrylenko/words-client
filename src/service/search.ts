@@ -1,3 +1,5 @@
+import hash from "object-hash";
+
 import {
     RatedWord,
     WordInfo,
@@ -56,10 +58,25 @@ const pickOption = ({ presetOptions, wordInfos, matches, answers }: PickOptionPa
             ? filterPresetOptions(presetOptions, wordInfos)[0]
             : matchedLength < 3
             ? matches[0]
-            : getMinMaxQuestions(answers, matches).questions[0];
+            : getMinMaxQuestion(answers, matches);
     }
 
     return matchedAnswersLength > threshold
         ? filterPresetOptions(presetOptions, wordInfos)[0]
-        : getMinMaxQuestions(answers, matchedAnswers).questions[0];
+        : getMinMaxQuestion(answers, matchedAnswers);
 };
+
+const memoize = (mmFn: (questions: string[], answers: string[]) =>
+    { questions: string[], minmax: number }) => {
+        const cash: { [key: string]: string } = {};
+
+        return (questions: string[], answers: string[]) => {
+            const key = hash({ q: questions, a: answers });
+            if (!cash[key]) {
+                cash[key] = mmFn(questions, answers).questions[0];
+            }
+            return cash[key];
+        };
+};
+
+const getMinMaxQuestion = memoize(getMinMaxQuestions);
