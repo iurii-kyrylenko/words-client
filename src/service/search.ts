@@ -15,9 +15,6 @@ import allWords from "./words-rated.json";
 type Presets = { [size: number]: string[] };
 
 export const search = (wordSize: number, wordInfos: WordInfo[], answers: string[]) => {
-    if (wordSize !== 5) {
-        answers = [];
-    }
     const presetOptions = (presets as Presets)[wordSize];
     const ratedWords = filterSize(allWords as RatedWord[], wordSize);
     const matches = filterWordInfos(ratedWords, wordInfos)
@@ -26,7 +23,9 @@ export const search = (wordSize: number, wordInfos: WordInfo[], answers: string[
     const remains = filterOutUsedAndDups(ratedWords, wordInfos)
         .map((rw) => rw.word);
 
-    const option = pickOption({ presetOptions, wordInfos, matches, answers });
+    const option = wordSize === 5
+        ? pickOption({ presetOptions, wordInfos, matches, answers })
+        : filterPresetOptions(presetOptions, wordInfos)[0];
     return { remains, matches, option };
 };
 
