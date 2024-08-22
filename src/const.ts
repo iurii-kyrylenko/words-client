@@ -25,4 +25,6 @@ export const presets = {
     ],
 };
 
+export const threshold = 42;
+
 export const displayLimit = 96;

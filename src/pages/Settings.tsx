@@ -1,18 +1,22 @@
-import { Button, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
+import { Button, Description, Field, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions, Textarea } from "@headlessui/react";
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, ArrowUpTrayIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/outline';
 import { wordSizes } from "../const";
 import { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
-import { IWordSize, setWordSize, storeAllAnswers } from "../store/app-slice";
-import { ChangeEvent, MouseEvent } from "react";
+import { IWordSize, setWordSize, storeAllAnswers, updatePresets, updateThreshold } from "../store/app-slice";
+import { ChangeEvent, MouseEvent, useState } from "react";
 
 export default function Settings () {
     const wordSize = useSelector((state: RootState) => state.wordSize);
     const answers = useSelector((state: RootState) => state.answers);
+    const settings = useSelector((state: RootState) => state.settings);
     const dispatch: AppDispatch = useDispatch();
+    const [threshold, setThreshold] = useState(settings.threshold.toString());
+    const [presets, setPresets] = useState(settings.presets[wordSize.size].join("\n"));
 
     const handleWordSize = (wordSize: IWordSize) => {
+        setPresets(settings.presets[wordSize.size].join("\n"));
         dispatch(setWordSize(wordSize));
     };
 
@@ -27,6 +31,26 @@ export default function Settings () {
         reader.onload = (e) => {
             dispatch(storeAllAnswers(JSON.parse(e.target?.result as string)));
         };
+    };
+
+    const handleThreshold = (e: ChangeEvent<HTMLInputElement>) => {
+        setThreshold(e.target.value);
+    }
+
+    const handlePresets = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        setPresets(e.target.value);
+    }
+
+    const handleSaveThreshold = () => {
+        dispatch(updateThreshold(Number(threshold)));
+    };
+
+    const handleSavePresets = () => {
+        const presetArray = presets
+            .split("\n")
+            .map((s) => s.trim())
+            .filter((s) => !!s);
+        dispatch(updatePresets(presetArray));
     };
 
     return (
@@ -64,6 +88,36 @@ export default function Settings () {
                     <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
                 </Button>
             </div>
+
+            <Field className="w-40">
+                <Description className="flex justify-between mb-1 dark:text-zinc-300">
+                    MinMax Limit
+                    <Button onClick={handleSaveThreshold}>
+                        <ArrowDownOnSquareStackIcon className="size-5" />
+                    </Button>
+                </Description>
+                <Input
+                    type="text"
+                    className="p-2 w-40 border dark:border-0 rounded-md dark:bg-slate-600 dark:text-zinc-50"
+                    onChange={handleThreshold}
+                    value={threshold}
+                />
+            </Field>
+
+            <Field className="w-40">
+                <Description className="flex justify-between mb-1 dark:text-zinc-300">
+                    Presets
+                    <Button onClick={handleSavePresets}>
+                        <ArrowDownOnSquareStackIcon className="size-5" />
+                    </Button>
+                </Description>
+                <Textarea
+                    className="p-2 w-40 h-32 resize-none border dark:border-0 rounded-md dark:bg-slate-600 dark:text-zinc-50"
+                    value={presets}
+                    onChange={handlePresets}
+                />
+            </Field>
+
          </div>
     );
 }

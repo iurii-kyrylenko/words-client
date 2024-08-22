@@ -12,6 +12,7 @@ export default function Helper () {
     const words = useSelector((state: RootState) => state.words);
     const results = useSelector((state: RootState) => state.results);
     const answers = useSelector((state: RootState) => state.answers);
+    const settings = useSelector((state: RootState) => state.settings);
     const dispatch: AppDispatch = useDispatch();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
@@ -31,7 +32,13 @@ export default function Helper () {
     };
 
     const handleSearch = () => {
-        const { remains, matches, option } = search(wordSize.size, words, answers);
+        const { remains, matches, option } = search({
+            wordSize: wordSize.size,
+            wordInfos: words,
+            answers,
+            presetOptions: settings.presets[wordSize.size],
+            threshold: settings.threshold,
+        });
         dispatch(setResults({
             remains: remains.slice(0, displayLimit),
             matches: matches.slice(0, displayLimit),

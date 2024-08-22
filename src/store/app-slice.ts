@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Status, wordSizes } from "../const";
-import { retriveAnswers, storeAnswers } from "./local-storage";
+import { ISettings, retriveAnswers, storeAnswers, retriveSettings, storeSettings } from "./local-storage";
 
 export interface IWordSize {
     size: number;
@@ -25,6 +25,7 @@ interface AppState {
     words: ICharInfo[][];
     results: IResults;
     answers: string[];
+    settings: ISettings;
 }
 
 const initialState: AppState = {
@@ -38,6 +39,7 @@ const initialState: AppState = {
         matchesSize: 0,
     },
     answers: retriveAnswers(),
+    settings: retriveSettings(),
 };
 
 const appSlice = createSlice({
@@ -72,6 +74,15 @@ const appSlice = createSlice({
                 storeAnswers(state.answers);
             }
         },
+        updatePresets: (state, action: PayloadAction<string[]>) => {
+            const wordSize = state.wordSize.size;
+            state.settings.presets[wordSize] = action.payload;
+            storeSettings(state.settings);
+        },
+        updateThreshold: (state, action: PayloadAction<number>) => {
+            state.settings.threshold = action.payload;
+            storeSettings(state.settings);
+        },
     },
 });
 
@@ -85,4 +96,6 @@ export const {
     storeAllAnswers,
     storeAnswer,
     removeAnswer,
+    updatePresets,
+    updateThreshold,
 } = appSlice.actions;
