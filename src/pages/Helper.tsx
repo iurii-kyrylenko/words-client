@@ -13,6 +13,7 @@ export default function Helper () {
     const results = useSelector((state: RootState) => state.results);
     const answers = useSelector((state: RootState) => state.answers);
     const settings = useSelector((state: RootState) => state.settings);
+    const guessMap = useSelector((state: RootState) => state.guessMap);
     const dispatch: AppDispatch = useDispatch();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
@@ -38,6 +39,7 @@ export default function Helper () {
             answers,
             presetOptions: settings.presets[wordSize.size],
             threshold: settings.threshold,
+            guessMap,
         });
         dispatch(setResults({
             remains: remains.slice(0, displayLimit),

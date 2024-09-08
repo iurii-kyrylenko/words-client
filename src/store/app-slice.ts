@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Status, wordSizes } from "../const";
-import { ISettings, retriveAnswers, storeAnswers, retriveSettings, storeSettings } from "./local-storage";
+import { ISettings, retriveAnswers, storeAnswers, retriveSettings, storeSettings, IGuessMap, retriveGuessMap, storeGuessMap } from "./local-storage";
 
 export interface IWordSize {
     size: number;
@@ -26,6 +26,7 @@ interface AppState {
     results: IResults;
     answers: string[];
     settings: ISettings;
+    guessMap: IGuessMap;
 }
 
 const initialState: AppState = {
@@ -40,6 +41,7 @@ const initialState: AppState = {
     },
     answers: retriveAnswers(),
     settings: retriveSettings(),
+    guessMap: retriveGuessMap(),
 };
 
 const appSlice = createSlice({
@@ -83,6 +85,10 @@ const appSlice = createSlice({
             state.settings.threshold = action.payload;
             storeSettings(state.settings);
         },
+        updateGuessMap: (state, action: PayloadAction<IGuessMap>) => {
+            state.guessMap = action.payload;
+            storeGuessMap(action.payload);
+        },
     },
 });
 
@@ -98,4 +104,5 @@ export const {
     removeAnswer,
     updatePresets,
     updateThreshold,
+    updateGuessMap,
 } = appSlice.actions;

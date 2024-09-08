@@ -10,13 +10,23 @@ import {
     getMinMaxQuestions,
 } from "./wordle";
 import allWords from "./words-rated.json";
+import { IGuessMap } from "../store/local-storage";
 
 interface SearchParams {
-    wordSize: number,
-    wordInfos: WordInfo[],
-    answers: string[],
-    presetOptions: string[],
-    threshold: number,
+    wordSize: number;
+    wordInfos: WordInfo[];
+    answers: string[];
+    presetOptions: string[];
+    threshold: number;
+    guessMap: IGuessMap;
+}
+
+interface PickOptionParams {
+    threshold: number;
+    wordInfos: WordInfo[];
+    matches: string[];
+    answers: string[];
+    guessMap: IGuessMap;
 }
 
 export const search = ({
@@ -25,6 +35,7 @@ export const search = ({
     answers,
     presetOptions,
     threshold,
+    guessMap,
 }: SearchParams) => {
     const ratedWords = filterSize(allWords as RatedWord[], wordSize);
     const matches = filterWordInfos(ratedWords, wordInfos)
@@ -33,26 +44,18 @@ export const search = ({
     const remains = filterOutUsedAndDups(ratedWords, wordInfos)
         .map((rw) => rw.word);
 
-    const option = wordSize === 5
-        ? pickOption({ presetOptions, threshold, wordInfos, matches, answers })
+    const option = wordSize === 5 && guessMap.firstGuess
+        ? pickOption({ threshold, wordInfos, matches, answers, guessMap })
         : filterPresetOptions(presetOptions, wordInfos)[0];
     return { remains, matches, option };
 };
 
-interface PickOptionParams {
-    presetOptions: string[];
-    threshold: number;
-    wordInfos: WordInfo[];
-    matches: string[];
-    answers: string[];
-}
-
 const pickOption = ({
-    presetOptions,
     threshold,
     wordInfos,
     matches,
-    answers
+    answers,
+    guessMap,
 }: PickOptionParams) => {
     const answersSet = new Set(answers);
     const matchedAnswers = matches.filter((w) => answersSet.has(w));
@@ -60,24 +63,41 @@ const pickOption = ({
     const matchedLength = matches.length;
 
     if (wordInfos.length === 0) {
-        return filterPresetOptions(presetOptions, wordInfos)[0];
+        return guessMap.firstGuess;
     }
 
-    if (matchedAnswersLength === 1 || matchedAnswersLength === 2) {
+    if (wordInfos.length === 1 && matchedAnswersLength > threshold) {
+        const key = infoToNumber(wordInfos[0]).number;
+        return guessMap.map[key].guess;
+    }
+
+    if (matchedAnswersLength > 0 && matchedAnswersLength < 3) {
         return matchedAnswers[0];
     }
 
-    if (matchedAnswersLength === 0) {
-        return matchedLength > threshold
-            ? filterPresetOptions(presetOptions, wordInfos)[0]
-            : matchedLength < 3
-            ? matches[0]
-            : getMinMaxQuestion(answers, matches);
+    if (matchedAnswersLength === 0 && matchedLength > 0 && matchedLength < 3) {
+        return matches[0];
     }
 
-    return matchedAnswersLength > threshold
-        ? filterPresetOptions(presetOptions, wordInfos)[0]
-        : getMinMaxQuestion(answers, matchedAnswers);
+    if (matchedAnswersLength > 2) {
+        return getMinMaxQuestion(answers, matchedAnswers);
+    }
+
+    if (matchedAnswersLength === 0 && matchedLength > 2) {
+        return getMinMaxQuestion(answers, matches);
+    }
+
+    return null;
+};
+
+const infoToNumber = (wordInfo: WordInfo) => {
+    const word: string[] = [];
+    let number = 0;
+    wordInfo.forEach(({ char, status }) => {
+        word.push(char);
+        number = number * 3 + status;
+    });
+    return { word: word.join(""), number };
 };
 
 const memoize = (mmFn: (questions: string[], answers: string[]) =>

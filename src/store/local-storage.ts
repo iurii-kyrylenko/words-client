@@ -9,8 +9,17 @@ export interface ISettings {
     presets: IPresets;
 }
 
+export interface IGuessMap {
+    firstGuess: string;
+    answersCount: number;
+    map: {
+        [key: number]: { guess: string | null };
+    };
+}
+
 const answersKey = "answers";
 const settingsKey = "settings";
+const guessMapKey = "guessMap";
 
 export const storeAnswers = (answers: string[]) => {
     const sAnswers = JSON.stringify(answers, null);
@@ -30,4 +39,14 @@ export const storeSettings = (settings: ISettings) => {
 export const retriveSettings = (): ISettings => {
     const sSettings = localStorage.getItem(settingsKey);
     return sSettings ? JSON.parse(sSettings) : { presets, threshold };
+};
+
+export const storeGuessMap = (guessMap: IGuessMap) => {
+    const sGuessMap = JSON.stringify(guessMap, null);
+    localStorage.setItem(guessMapKey, sGuessMap);
+};
+
+export const retriveGuessMap = (): IGuessMap => {
+    const sGuessMap = localStorage.getItem(guessMapKey);
+    return sGuessMap ? JSON.parse(sGuessMap) : { firstGuess: null, map: {} };
 };

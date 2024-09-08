@@ -4,13 +4,14 @@ import { ArrowDownTrayIcon, ArrowUpTrayIcon, ArrowDownOnSquareStackIcon } from '
 import { wordSizes } from "../const";
 import { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
-import { IWordSize, setWordSize, storeAllAnswers, updatePresets, updateThreshold } from "../store/app-slice";
+import { IWordSize, setWordSize, storeAllAnswers, updateGuessMap, updatePresets, updateThreshold } from "../store/app-slice";
 import { ChangeEvent, MouseEvent, useState } from "react";
 
 export default function Settings () {
     const wordSize = useSelector((state: RootState) => state.wordSize);
     const answers = useSelector((state: RootState) => state.answers);
     const settings = useSelector((state: RootState) => state.settings);
+    const guessMap = useSelector((state: RootState) => state.guessMap);
     const dispatch: AppDispatch = useDispatch();
     const [threshold, setThreshold] = useState(settings.threshold.toString());
     const [presets, setPresets] = useState(settings.presets[wordSize.size].join("\n"));
@@ -30,6 +31,15 @@ export default function Settings () {
         reader.readAsText(blob);
         reader.onload = (e) => {
             dispatch(storeAllAnswers(JSON.parse(e.target?.result as string)));
+        };
+    };
+
+    const handleUploadGuessMap = (e: ChangeEvent<HTMLInputElement>) => {
+        const blob = (e.target.files ?? [])[0];
+        const reader = new FileReader();
+        reader.readAsText(blob);
+        reader.onload = (e) => {
+            dispatch(updateGuessMap(JSON.parse(e.target?.result as string)));
         };
     };
 
@@ -73,7 +83,7 @@ export default function Settings () {
                 <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
                     <a
                         href={`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(answers, null, 2))}`}
-                        download="answers.json"
+                        download={`answers-${answers.length}.json`}
                     >
                         <ArrowDownTrayIcon className="absolute top-2.5 left-2.5 size-5" />
                         <div className="ml-4">{answers.length} answers</div>
@@ -84,8 +94,20 @@ export default function Settings () {
             <div className="relative">
                 <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
                     <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
-                    <div className="ml-4">Upload</div>
+                    <div className="ml-4">Up answers</div>
                     <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
+                </Button>
+            </div>
+
+            <div>
+                <p className="mb-1 dark:text-zinc-300">
+                    Start: {guessMap.firstGuess && `${guessMap.firstGuess.toUpperCase()}
+                    | ${guessMap.answersCount}`}
+                </p>
+                <Button className="relative py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">
+                    <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Up guess map</div>
+                    <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUploadGuessMap} className="absolute top-0 left-0 opacity-0 w-full h-full" />
                 </Button>
             </div>
 
