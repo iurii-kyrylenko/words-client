@@ -10,7 +10,7 @@ import {
     getMinMaxQuestions,
 } from "./wordle";
 import allWords from "./words-rated.json";
-import { IGuessMap } from "../store/local-storage";
+import { IGuessMap, retriveDecisionCache, storeDecisionCache } from "../store/local-storage";
 
 interface SearchParams {
     wordSize: number;
@@ -102,14 +102,15 @@ const infoToNumber = (wordInfo: WordInfo) => {
 
 const memoize = (mmFn: (questions: string[], answers: string[]) =>
     { questions: string[], minmax: number }) => {
-        const cash: { [key: string]: string } = {};
+        const cache = retriveDecisionCache();
 
         return (questions: string[], answers: string[]) => {
             const key = hash({ q: questions, a: answers });
-            if (!cash[key]) {
-                cash[key] = mmFn(questions, answers).questions[0];
+            if (!cache[key]) {
+                cache[key] = mmFn(questions, answers).questions[0];
+                storeDecisionCache(cache);
             }
-            return cash[key];
+            return cache[key];
         };
 };
 

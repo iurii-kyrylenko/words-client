@@ -1,11 +1,12 @@
 import { Button, Description, Field, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions, Textarea } from "@headlessui/react";
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { ArrowDownTrayIcon, ArrowUpTrayIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, ArrowUpTrayIcon, ArrowDownOnSquareStackIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { wordSizes } from "../const";
 import { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { IWordSize, setWordSize, storeAllAnswers, updateGuessMap, updatePresets, updateThreshold } from "../store/app-slice";
 import { ChangeEvent, MouseEvent, useState } from "react";
+import { storeDecisionCache } from "../store/local-storage";
 
 export default function Settings () {
     const wordSize = useSelector((state: RootState) => state.wordSize);
@@ -63,6 +64,11 @@ export default function Settings () {
         dispatch(updatePresets(presetArray));
     };
 
+    const handleClearCacheAndRefresh = () => {
+        storeDecisionCache({});
+        window.location.reload();
+    }
+
     return (
         <div className="m-6 grid grid-cols-1 gap-6">
             <Listbox value={wordSize} onChange={handleWordSize}>
@@ -96,6 +102,16 @@ export default function Settings () {
                     <ArrowUpTrayIcon className="absolute top-2.5 left-2.5 size-5" />
                     <div className="ml-4">Up answers</div>
                     <input type="file" accept=".json" onClick={handleUploadStart} onChange={handleUpload} className="absolute top-0 left-0 opacity-0 w-full h-full" />
+                </Button>
+            </div>
+
+            <div className="relative">
+                <Button
+                    className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50"
+                    onClick={handleClearCacheAndRefresh}
+                >
+                    <XCircleIcon className="absolute top-2.5 left-2.5 size-5" />
+                    <div className="ml-4">Clear cache</div>
                 </Button>
             </div>
 
