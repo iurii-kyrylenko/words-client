@@ -13,18 +13,13 @@ export interface IGuessMap {
     firstGuess: string;
     answersCount: number;
     map: {
-        [key: number]: { guess: string | null };
+        [key: string]: string;
     };
-}
-
-export interface IDecisionCache {
-    [key: string]: string;
 }
 
 const answersKey = "answers";
 const settingsKey = "settings";
 const guessMapKey = "guessMap";
-const decisionCacheKey = "decisionCache";
 
 export const storeAnswers = (answers: string[]) => {
     const sAnswers = JSON.stringify(answers, null);
@@ -54,14 +49,4 @@ export const storeGuessMap = (guessMap: IGuessMap) => {
 export const retriveGuessMap = (): IGuessMap => {
     const sGuessMap = localStorage.getItem(guessMapKey);
     return sGuessMap ? JSON.parse(sGuessMap) : { firstGuess: null, map: {} };
-};
-
-export const storeDecisionCache = (cache: IDecisionCache) => {
-    const sCache = JSON.stringify(cache, null);
-    localStorage.setItem(decisionCacheKey, sCache);
-};
-
-export const retriveDecisionCache = (): IDecisionCache => {
-    const sCache = localStorage.getItem(decisionCacheKey);
-    return sCache ? JSON.parse(sCache) : {};
 };

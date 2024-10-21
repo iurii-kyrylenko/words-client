@@ -10,7 +10,7 @@ import {
     getMinMaxQuestions,
 } from "./wordle";
 import allWords from "./words-rated.json";
-import { IGuessMap, retriveDecisionCache, storeDecisionCache } from "../store/local-storage";
+import { IGuessMap } from "../store/local-storage";
 
 interface SearchParams {
     wordSize: number;
@@ -66,24 +66,24 @@ const pickOption = ({
         return guessMap.firstGuess;
     }
 
-    if (wordInfos.length === 1 && matchedAnswersLength > threshold) {
-        const key = infoToNumber(wordInfos[0]).number;
-        return guessMap.map[key].guess;
-    }
-
     if (matchedAnswersLength > 0 && matchedAnswersLength < 3) {
         return matchedAnswers[0];
+    }
+
+    const key = getInfosPath(wordInfos);
+    if (guessMap.map[key]) {
+        return guessMap.map[key];
+    }
+
+    if (matchedAnswersLength > 2 && matchedAnswersLength < threshold) {
+        return getMinMaxQuestion(answers, matchedAnswers);
     }
 
     if (matchedAnswersLength === 0 && matchedLength > 0 && matchedLength < 3) {
         return matches[0];
     }
 
-    if (matchedAnswersLength > 2) {
-        return getMinMaxQuestion(answers, matchedAnswers);
-    }
-
-    if (matchedAnswersLength === 0 && matchedLength > 2) {
+    if (matchedAnswersLength === 0 && matchedLength > 2 && matchedLength < threshold) {
         return getMinMaxQuestion(answers, matches);
     }
 
@@ -100,15 +100,20 @@ const infoToNumber = (wordInfo: WordInfo) => {
     return { word: word.join(""), number };
 };
 
+const getInfosPath = (wordInfos: WordInfo[]) => wordInfos.map((info) => {
+    const { word, number } = infoToNumber(info);
+    const ternary = number.toString(3).padStart(5, "0");
+    return `${word}-${ternary}`;
+}).sort().join("|");
+
 const memoize = (mmFn: (questions: string[], answers: string[]) =>
     { questions: string[], minmax: number }) => {
-        const cache = retriveDecisionCache();
+        const cache: { [key: string]: string } = {};
 
         return (questions: string[], answers: string[]) => {
             const key = hash({ q: questions, a: answers });
             if (!cache[key]) {
                 cache[key] = mmFn(questions, answers).questions[0];
-                storeDecisionCache(cache);
             }
             return cache[key];
         };
