@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
 import { Status, wordSizes } from "../const";
 import { ISettings, retriveAnswers, storeAnswers, retriveSettings, storeSettings, IGuessMap, retriveGuessMap, storeGuessMap } from "./local-storage";
 
@@ -106,3 +106,17 @@ export const {
     updateThreshold,
     updateGuessMap,
 } = appSlice.actions;
+
+export const optionalGuessSelector = createSelector(
+    (state: AppState) => state.words,
+    (state: AppState) => state.answers,
+    (state: AppState) => state.results.matches,
+    (words, answers, matches) => {
+        const answersSet = new Set(answers);
+        const matchedAnswers = matches.filter((w) => answersSet.has(w));
+        if (words.map((wi) => wi.map((ci) => ci.char).join("")).slice(-1)[0] !== matchedAnswers[0]) {
+            return undefined;
+        }
+        return matchedAnswers.length === 2 ? matchedAnswers[1] : undefined;
+    }
+);

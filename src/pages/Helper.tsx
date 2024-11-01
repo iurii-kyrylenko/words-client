@@ -5,7 +5,7 @@ import Words from "../components/Words";
 import { search } from "../service/search";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
-import { removeAnswer, setResults, setWords, storeAnswer } from "../store/app-slice";
+import { optionalGuessSelector, removeAnswer, setResults, setWords, storeAnswer } from "../store/app-slice";
 
 export default function Helper () {
     const wordSize = useSelector((state: RootState) => state.wordSize);
@@ -14,6 +14,7 @@ export default function Helper () {
     const answers = useSelector((state: RootState) => state.answers);
     const settings = useSelector((state: RootState) => state.settings);
     const guessMap = useSelector((state: RootState) => state.guessMap);
+    const optionalGuess = useSelector(optionalGuessSelector);
     const dispatch: AppDispatch = useDispatch();
 
     const handleChange = (wordIndex: number, letterIndex: number) => {
@@ -83,6 +84,7 @@ export default function Helper () {
                 />
                 <Words
                     words={words}
+                    optWord={optionalGuess}
                     onChange={handleChange}
                 />
             </div>
