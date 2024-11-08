@@ -57,8 +57,8 @@ const pickOption = ({
     answers,
     guessMap,
 }: PickOptionParams) => {
-    const answersSet = new Set(answers);
-    const matchedAnswers = matches.filter((w) => answersSet.has(w));
+    const matchedSet = new Set(matches);
+    const matchedAnswers = answers.filter((w) => matchedSet.has(w));
     const matchedAnswersLength = matchedAnswers.length;
     const matchedLength = matches.length;
 

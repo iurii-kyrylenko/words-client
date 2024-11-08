@@ -112,8 +112,8 @@ export const optionalGuessSelector = createSelector(
     (state: AppState) => state.answers,
     (state: AppState) => state.results.matches,
     (words, answers, matches) => {
-        const answersSet = new Set(answers);
-        const matchedAnswers = matches.filter((w) => answersSet.has(w));
+        const matchedSet = new Set(matches);
+        const matchedAnswers = answers.filter((w) => matchedSet.has(w));
         if (words.map((wi) => wi.map((ci) => ci.char).join("")).slice(-1)[0] !== matchedAnswers[0]) {
             return undefined;
         }
