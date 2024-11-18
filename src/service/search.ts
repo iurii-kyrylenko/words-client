@@ -28,6 +28,14 @@ interface PickOptionParams {
     answers: string[];
     guessMap: IGuessMap;
 }
+export const getStartGuess = (
+    { wordSize, presetOptions, guessMap }:
+    {
+        wordSize: number;
+        presetOptions: string[];
+        guessMap: IGuessMap;
+    }
+) => wordSize === 5 && guessMap.firstGuess ? guessMap.firstGuess : presetOptions[0];
 
 export const search = ({
     wordSize,

@@ -2,13 +2,15 @@ import { Status, displayLimit } from "../const";
 import Actions from "../components/Actions";
 import Results from "../components/Results";
 import Words from "../components/Words";
-import { search } from "../service/search";
+import { getStartGuess, search } from "../service/search";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
-import { optionalGuessSelector, removeAnswer, setResults, setWords, storeAnswer } from "../store/app-slice";
+import { ICharInfo, optionalGuessSelector, removeAnswer, setResults, setWords, storeAnswer } from "../store/app-slice";
+import QuickActions from "../components/QuickActions";
 
 export default function Helper () {
     const wordSize = useSelector((state: RootState) => state.wordSize);
+    const isQuickActions = useSelector((state: RootState) => state.isQuickActions);
     const words = useSelector((state: RootState) => state.words);
     const results = useSelector((state: RootState) => state.results);
     const answers = useSelector((state: RootState) => state.answers);
@@ -31,6 +33,18 @@ export default function Helper () {
 
     const handleDelete = () => {
         dispatch(setWords(words.slice(0, -1)));
+    };
+
+    const handleInit = () => {
+        const startWord = getStartGuess({
+            wordSize: wordSize.size,
+            presetOptions: settings.presets[wordSize.size],
+            guessMap,
+        });
+        const infos: ICharInfo[][] = startWord
+            ? [[...startWord].map((char) => ({ char, status: Status.NotFound }))]
+            : [];
+        dispatch(setWords(infos));
     };
 
     const handleSearch = () => {
@@ -72,16 +86,29 @@ export default function Helper () {
     return (
         <div className="my-4 ml-4 flex flex-row gap-4 flex-wrap">
             <div className="flex flex-col gap-4">
-                <Actions
-                    wordSize={wordSize}
-                    words={words}
-                    answers={answers}
-                    onAdd={handleAdd}
-                    onDelete={handleDelete}
-                    onSearch={handleSearch}
-                    onStore={handleStoreAnswer}
-                    onRemove={handleRemoveAnswer}
-                />
+                {isQuickActions &&
+                    <QuickActions
+                        wordSize={wordSize}
+                        words={words}
+                        answers={answers}
+                        onAdd={handleAdd}
+                        onDelete={handleDelete}
+                        onInit={handleInit}
+                        onSearch={handleSearch}
+                    />
+                }
+                {!isQuickActions &&
+                    <Actions
+                        wordSize={wordSize}
+                        words={words}
+                        answers={answers}
+                        onAdd={handleAdd}
+                        onDelete={handleDelete}
+                        onSearch={handleSearch}
+                        onStore={handleStoreAnswer}
+                        onRemove={handleRemoveAnswer}
+                    />
+                }
                 <Words
                     words={words}
                     optWord={optionalGuess}

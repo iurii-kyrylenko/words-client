@@ -1,14 +1,15 @@
-import { Button, Description, Field, Input, Listbox, ListboxButton, ListboxOption, ListboxOptions, Textarea } from "@headlessui/react";
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { Button, Checkbox, Description, Field, Input, Label, Listbox, ListboxButton, ListboxOption, ListboxOptions, Textarea } from "@headlessui/react";
+import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { ArrowDownTrayIcon, ArrowUpTrayIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/outline';
 import { wordSizes } from "../const";
 import { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
-import { IWordSize, setWordSize, storeAllAnswers, updateGuessMap, updatePresets, updateThreshold } from "../store/app-slice";
+import { IWordSize, setWordSize, storeAllAnswers, toggleQuickActions, updateGuessMap, updatePresets, updateThreshold } from "../store/app-slice";
 import { ChangeEvent, MouseEvent, useState } from "react";
 
 export default function Settings () {
     const wordSize = useSelector((state: RootState) => state.wordSize);
+    const isQuickActions = useSelector((state: RootState) => state.isQuickActions);
     const answers = useSelector((state: RootState) => state.answers);
     const settings = useSelector((state: RootState) => state.settings);
     const guessMap = useSelector((state: RootState) => state.guessMap);
@@ -78,6 +79,17 @@ export default function Settings () {
                     ))}
                 </ListboxOptions>
             </Listbox>
+
+            <Field className="flex items-center gap-2 dark:text-zinc-50">
+                <Checkbox
+                    checked={isQuickActions}
+                    onChange={() => dispatch(toggleQuickActions())}
+                    className="group size-6 rounded-md p-1 ring-1 ring-inset"
+                >
+                    <CheckIcon className="hidden size-4 fill-black dark:fill-zinc-50 group-data-[checked]:block" />
+                </Checkbox>
+                <Label>Quick Actions</Label>
+            </Field>
 
             <div className="relative">
                 <Button className="py-2 rounded-md w-40 bg-sky-200 dark:bg-slate-600 data-[active]:bg-sky-400 data-[active]:dark:bg-slate-800 dark:text-zinc-50">

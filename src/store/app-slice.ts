@@ -21,6 +21,7 @@ export interface IResults {
 
 interface AppState {
     isDarkMode: boolean;
+    isQuickActions: boolean;
     wordSize: IWordSize;
     words: ICharInfo[][];
     results: IResults;
@@ -31,6 +32,7 @@ interface AppState {
 
 const initialState: AppState = {
     isDarkMode: true,
+    isQuickActions: true,
     wordSize: wordSizes[1],
     words: [],
     results: {
@@ -50,6 +52,9 @@ const appSlice = createSlice({
     reducers: {
         toggleMode: (state) => {
             state.isDarkMode = !state.isDarkMode;
+        },
+        toggleQuickActions: (state) => {
+            state.isQuickActions = !state.isQuickActions;
         },
         setWordSize: (state, action: PayloadAction<IWordSize>) => {
             state.wordSize = action.payload;
@@ -96,6 +101,7 @@ export default appSlice.reducer;
 
 export const {
     toggleMode,
+    toggleQuickActions,
     setWordSize,
     setWords,
     setResults,
